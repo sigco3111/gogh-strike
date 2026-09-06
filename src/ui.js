@@ -37,7 +37,7 @@ function weaponPreview(container,path,weapon){
 }
 function portrait(team,role,name='Artist',card=false){
  const el=node('span','portrait');const initial=node('span','portrait-initial',String(name).replace(/^The /,'').slice(0,1));el.append(initial);
- if(Number.isInteger(team)&&role){const image=document.createElement('img');image.src=`/assets/portraits/${card?'':'faces/'}${team}-${role}.png`;image.alt='';image.draggable=false;image.addEventListener('load',()=>el.classList.add('has-image'),{once:true});image.addEventListener('error',()=>image.remove(),{once:true});el.append(image);}
+ if(Number.isInteger(team)&&role){const image=document.createElement('img');image.src=`${new URL('../../assets/portraits/', import.meta.url).href}${card?'':'faces/'}${team}-${role}.png`;image.alt='';image.draggable=false;image.addEventListener('load',()=>el.classList.add('has-image'),{once:true});image.addEventListener('error',()=>image.remove(),{once:true});el.append(image);}
  return el;
 }
 
