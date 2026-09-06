@@ -13,6 +13,11 @@
   <link rel="canonical" href="./">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23112b35'/%3E%3Cpath d='M13 44 25 15l7 24 15-26-6 36' fill='none' stroke='%23efc56b' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="./src/style.css">
+  <script>
+    // Pages subpath 호환: <base href> 자동 설정.
+    // 배포 환경(/gogh-strike/)과 로컬(/) 모두 동작.
+    (function(){const p=location.pathname.replace(/[^/]*$/,'');if(p&&p!=='/'){const b=document.createElement('base');b.href=p;document.head.prepend(b);}})();
+  </script>
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body data-screen="menu">
