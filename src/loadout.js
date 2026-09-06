@@ -47,7 +47,7 @@ export function shopFor(actor,rules){
  return [...WEAPONS.filter(w=>w.id!=='pistol').map(w=>({id:w.id,name:w.name,description:w.description,cost:w.cost,kind:'weapon',owned:actor?.primaryId===w.id})),...GEAR.map(g=>({...g,owned:g.kind==='armor'?(actor?.armor||0)>=100:(actor?.utility?.[g.id]||0)>=g.max}))].map(item=>({...item,available:active&&!item.owned&&(actor.credits||0)>=item.cost}));
 }
 export function buy(actor,itemId,rules){
- if(!item?.available)return {ok:false,message:rules?.phase!=='staging'?'라운드 사이에만 보급이 가능합니다.':'이미 장착됨 또는 잔액 부족.'};
+ const item=shopFor(actor,rules).find(i=>i.id===itemId);if(!item?.available)return {ok:false,message:rules?.phase!=='staging'?'라운드 사이에만 보급이 가능합니다.':'이미 장착됨 또는 잔액 부족.'};
  if(!rules.spendCredits(actor,item.cost))return {ok:false,message:'잔액이 부족합니다.'};
  if(item.kind==='weapon'){
   stashMagazine(actor);if(actor.primaryId){delete actor.weapons[actor.primaryId];delete actor.attachments[actor.primaryId];}

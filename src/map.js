@@ -455,7 +455,7 @@ function makeSky(){
 }
 
 const viewpoints=[
- {name:'침실',place:'아를 · 1888',p:V(-1.28,2.57,5.42),look:V(.55,1.90,-1.85),zone:0},
+ {name:'The Bedroom',place:'아를 · 1888',p:V(-1.28,2.57,5.42),look:V(.55,1.90,-1.85),zone:0},
  {name:'Café Terrace at Night',place:'Place du Forum · 1888',p:V(-12.0,1.96,10.6),look:V(-12.4,4.2,-19.5),zone:1},
  {name:'Starry Night Over the Rhône',place:'Arles · 1888',p:V(-2.7,2.05,-44.0),look:V(5,7.0,-98),zone:2},
  {name:'Wheatfield with Crows',place:'Auvers-sur-Oise · 1890',p:V(48,2.02,23.4),look:V(48,5.3,-21),zone:3},
