@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#112b35">
+  <meta name="description" content="화가 하나를 선택하라. 당신의 크루에 합류하라. 반 고흐 마을에서 벌이는 3분짜리 페인트 대전.">
+  <title>고흐 스트라이크 · 페인트 클래시</title>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="고흐 스트라이크 · 페인트 클래시">
+  <meta property="og:description" content="12명의 화가. 두 개의 크루. 반 고흐 마을을 가로지르는 짧고 강렬한 페인트 대전.">
+  <meta property="og:url" content="./">
+  <link rel="canonical" href="./">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23112b35'/%3E%3Cpath d='M13 44 25 15l7 24 15-26-6 36' fill='none' stroke='%23efc56b' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./src/style.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body data-screen="menu">
+  <div id="world-veil" aria-hidden="true"></div>
+  <div id="loading-screen" role="status"><div class="gogh-wordmark loading-wordmark" aria-label="고흐 스트라이크"><span>고흐</span><span>스트라이크</span></div><p id="loading-text">마을을 여는 중…</p></div>
+  <div id="game-ui">
+    <header class="menu-brand menu-only"><a href="#" id="brand-home" aria-label="고흐 스트라이크 홈"><span class="gogh-wordmark menu-wordmark"><span>고흐</span><span>스트라이크</span></span></a><button class="settings-open quiet-button">설정</button></header>
+    <main id="main-menu" class="menu-only" aria-label="화가 선택">
+      <div class="lobby-heading"><div><p class="eyebrow">반 고흐의 마을</p><h1>페인트 클래시<span>.</span></h1></div><p class="match-promise">먼저 <b>20킬</b><span>3분 · 빠른 리스폰</span></p></div>
+      <div id="faction-options" class="faction-options" role="group" aria-label="크루 선택"></div>
+      <div class="selection-heading"><h2>화가 선택</h2><p>한 명의 화가. 한 자루의 시그니처 무기.</p></div>
+      <div id="artist-options" class="artist-options" role="group" aria-label="화가 선택"></div>
+      <section class="selection-kit" aria-label="선택한 화가의 장비">
+        <div class="kit-content">
+          <div class="primary-kit"><div id="primary-preview" class="weapon-preview" aria-label="시그니처 무기 미리보기"></div><div class="primary-description"><div><span id="selected-weapon-class" class="eyebrow">돌격소총</span><strong id="selected-weapon">프로방스</strong></div><div class="primary-stats"><span id="selected-magazine">28발</span><span id="selected-fire-type">자동</span></div></div></div>
+          <div class="secondary-kit"><span class="eyebrow">보조무기</span><div id="secondary-preview" class="weapon-preview"></div><b id="selected-sidearm">아틀리에</b><span>권총</span></div>
+          <div class="art-kit"><span class="eyebrow">나의 아트 태그</span><img id="selected-art-tag" alt="" width="68" height="68"><b id="selected-tag-name"></b><span><kbd>T</kbd> 벽에 스프레이</span></div>
+        </div>
+        <div class="kit-play"><div class="selected-artist"><span class="eyebrow">내가 플레이 중</span><strong id="selected-artist-name">반 고흐</strong><button id="inspect-artist" class="inspect-artist" type="button"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="8" r="5"/><path d="m12 12 5 5M8 5v6M5 8h6"/></svg>화가 점검</button><span class="kit-taunt"><kbd>J</kbd><span id="selected-taunt-name">해바라기 스핀</span></span></div><button id="deploy-button" class="primary-button" disabled>플레이 <span aria-hidden="true">↗</span></button></div>
+      </section>
+      <div class="rival-preview"><div id="enemy-portraits" class="enemy-portraits" aria-hidden="true"></div><p>상대는 <strong id="enemy-faction-name">인디펜던츠</strong><span>실존 화가들. 완전히 상상의 페인트 대전.</span></p></div>
+    </main>
+    <footer class="menu-footer menu-only">WASD 이동 <span>·</span> 마우스 조준 & 발사 <span>·</span> Shift 질주 <span>·</span> C 앉기</footer>
+
+    <div id="hud" class="play-only" aria-label="경기 정보">
+      <div class="score-ribbon"><div class="team-score friendly"><i id="friendly-team-crest" class="team-crest" aria-hidden="true"></i><span>우리 크루 <small id="friendly-team-name"></small></span><b id="friendly-score">0</b></div><div class="score-center"><b id="match-timer">3:00</b><span id="score-target">먼저 20킬</span></div><div class="team-score enemy"><b id="enemy-score">0</b></span><span>적 <small id="enemy-team-name"></small></span><i id="enemy-team-crest" class="team-crest" aria-hidden="true"></i></div></div>
+      <div id="kill-feed" class="kill-feed" aria-live="polite" aria-label="최근 처치"></div>
+      <div id="scope-overlay" class="scope-overlay" aria-hidden="true"><div class="scope-lens"><i></i><b></b></div></div>
+      <div id="crosshair" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
+      <div id="hit-marker" aria-hidden="true">×</div><div id="hit-confirmation" aria-hidden="true"></div><div id="damage-vignette" aria-hidden="true"></div>
+      <div id="announcement" class="announcement" role="status"></div>
+      <div id="spawn-protection" class="spawn-protection" role="img" aria-label="리스폰 직후 짧은 보호" title="리스폰 직후 짧은 보호"><svg viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6z"/><path d="m8 12 3 3 5-6"/></svg></div>
+      <section class="health-panel" aria-label="내 체력"><div id="player-avatar" class="player-avatar"></div><div class="health-main"><div class="health-heading"><b id="health-value">100</b><span id="player-name">반 고흐</span></div><div class="health-track" role="progressbar" aria-label="체력" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="health-fill"></i></div><div class="secondary-vitals"><span title="방어구"><svg viewBox="0 0 24 24"><path d="m12 3 7 3v6c0 5-7 8-7 8s-7-3-7-8V6z"/></svg><i><b id="armor-fill"></b></i></span><span title="스태미나"><svg viewBox="0 0 24 24"><path d="m13 2-7 11h6l-1 9 7-12h-6z"/></svg><i><b id="stamina-fill"></b></i></span></div></div></section>
+      <section class="weapon-panel" aria-label="내 탄약"><div class="weapon-title"><span id="hud-weapon-icon"></span><b id="hud-weapon-name">프로방스</b></div><div class="ammo-row"><b id="ammo-current">28</b><span>/ <span id="ammo-reserve">140</span></span></div><div id="reload-state"><kbd>R</kbd><span id="reload-label">재장전</span><i><b id="reload-fill"></b></i></div><div id="weapon-slots" class="weapon-slots" aria-label="보유 무기"></div></section>
+      <div id="utility-hud" class="utility-hud" aria-label="유틸리티"></div>
+      <div id="interaction-hud" class="interaction-hud" role="status"><span id="interaction-label">회복 중</span><i><b id="interaction-fill"></b></i></div>
+      <div id="cosmetic-hud" class="cosmetic-hud"><div id="spray-hud" class="spray-hud" aria-label="아트 태그"><kbd>T</kbd><img id="spray-hud-image" alt="" width="25" height="25"><span id="spray-status">스프레이</span></div><div id="taunt-hud" class="taunt-hud" aria-label="J: 도발 춤"><kbd>J</kbd><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="14" cy="4" r="2.3"/><path d="m12 9 4 2 4-4M12 9 7 7 4 10m8-1-2 6 5 3 2 4m-7-7-4 3-2 4"/></svg><span id="taunt-status">도발</span></div></div><div class="match-help"><span><kbd>C</kbd> 앉기</span><span><kbd>TAB</kbd> 점수</span><span><kbd>ESC</kbd> 일시정지</span></div>
+      <div id="respawn-panel" class="respawn-panel" role="status"><div class="respawn-message"><p><strong id="respawn-timer">2</strong>초 후 복귀</p><div class="death-credit"><div id="killer-avatar" class="killer-avatar"></div><span><b id="killer-name">상대</b>에게 처치됨</span></div></div></div>
+      <button id="pointer-resume" class="pointer-resume">클릭하여 플레이 <span>마우스 시점이 잠깁니다</span></button>
+    </div>
+
+    <section id="match-intro" class="match-intro" role="status" aria-live="polite" aria-label="경기 시작" hidden>
+      <div class="intro-content">
+        <div class="intro-brand"><div class="gogh-wordmark intro-wordmark" aria-label="고흐 스트라이크"><span>고흐</span><span>스트라이크</span></div></div>
+        <div class="intro-dial">
+          <svg class="intro-ring" viewBox="0 0 132 132" aria-hidden="true"><circle class="intro-ring-track" cx="66" cy="66" r="58"/><circle class="intro-ring-progress" cx="66" cy="66" r="58"/><circle class="intro-ring-accent" cx="66" cy="66" r="63"/></svg>
+          <div id="intro-count" class="intro-count" aria-hidden="true"><span class="intro-number">3</span></div>
+        </div>
+        <div id="intro-crews" class="intro-crews"><i id="intro-yellow-crest" aria-hidden="true"></i><i id="intro-independent-crest" aria-hidden="true"></i></div>
+      </div>
+    </section>
+
+    <section id="pause-panel" class="overlay-panel" role="dialog" aria-modal="true" aria-label="일시정지" hidden><div class="modal-card pause-card"><div class="panel-brand"><div class="gogh-wordmark panel-wordmark" aria-label="고흐 스트라이크"><span>고흐</span><span>스트라이크</span></div></div><h2>일시정지됨.</h2><button id="resume-button" class="primary-button">계속하기 <span>↗</span></button><div class="pause-actions"><button class="settings-open secondary-button">설정</button><button id="pause-menu" class="secondary-button">화가 변경</button></div><details class="controls-details"><summary>조작법 <span aria-hidden="true">+</span></summary><div class="controls-grid"><span><kbd>WASD</kbd>이동</span><span><kbd>마우스</kbd>조준 & 발사</span><span><kbd>우클릭</kbd>정조준</span><span><kbd>SHIFT</kbd>질주</span><span><kbd>SPACE</kbd>점프</span><span><kbd>C</kbd>앉기</span><span><kbd>R</kbd>재장전</span><span><kbd>Q</kbd>연막</span><span><kbd>G</kbd>페인트 폭탄</span><span><kbd>H</kbd>꾹 눌러 회복</span><span><kbd>T</kbd>아트 태그 스프레이</span><span><kbd>J</kbd>춤추기 / 취소</span><span><kbd>1 / 2</kbd>무기 전환</span><span><kbd>TAB</kbd>점수표</span></div></details><button id="pause-restart" class="quiet-button">경기 재시작</button></div></section>
+    <section id="settings-panel" class="overlay-panel" role="dialog" aria-modal="true" aria-label="설정" hidden><div class="modal-card settings-card"><div class="panel-brand"><div class="gogh-wordmark panel-wordmark" aria-label="고흐 스트라이크"><span>고흐</span><span>스트라이크</span></div></div><div class="modal-heading"><h2>설정.</h2><button id="close-settings" class="close-button" aria-label="설정 닫기">×</button></div><label for="sensitivity">마우스 감도 <output id="sensitivity-output">1.00×</output></label><input id="sensitivity" type="range" min="0.25" max="2.5" step="0.05" value="1"><label for="volume">볼륨 <output id="volume-output">65%</output></label><input id="volume" type="range" min="0" max="1" step="0.05" value="0.65"><p class="setting-label">브러시워크 품질</p><div class="quality-options" role="group" aria-label="그래픽 품질"><button data-graphics="performance">라이트</button><button data-graphics="balanced">밸런스</button><button data-graphics="full">리치</button></div><button id="settings-done" class="primary-button">완료 <span>✓</span></button></div></section>
+    <section id="scoreboard-panel" class="overlay-panel scoreboard-overlay" role="dialog" aria-label="점수" hidden><div class="modal-card scoreboard-card"><div class="panel-brand"><div class="gogh-wordmark panel-wordmark" aria-label="고흐 스트라이크"><span>고흐</span><span>스트라이크</span></div></div><div class="modal-heading"><h2>점수표.</h2><span class="scoreboard-hint"><kbd>TAB</kbd>을 꾹 누르세요</span></div><div id="scoreboard-teams" class="scoreboard-teams"></div></div></section>
+    <section id="results-panel" class="overlay-panel" role="dialog" aria-modal="true" aria-label="경기 결과" hidden><div class="modal-card results-card"><div class="panel-brand"><div class="gogh-wordmark panel-wordmark" aria-label="고흐 스트라이크"><span>고흐</span><span>스트라이크</span></div></div><h2 id="result-title">우리 크루의 승리.</h2><div class="results-score"><span class="friendly"><small><i id="result-friendly-crest" class="team-crest" aria-hidden="true"></i><span id="result-friendly-name"></span></small><b id="result-friendly-score">20</b></span><i>—</i><span class="enemy"><small><i id="result-enemy-crest" class="team-crest" aria-hidden="true"></i><span id="result-enemy-name"></span></small><b id="result-enemy-score">12</b></span></div><div class="result-player"><div id="result-avatar"></div><div><b id="result-artist"></b><span id="result-performance"></span></div></div><button id="rematch-button" class="primary-button">한 번 더 <span>↗</span></button><button id="results-menu" class="secondary-button">화가 변경</button></div></section>
+    <div id="toast" class="toast" role="status"></div>
+    <div id="fatal-error" class="overlay-panel" role="alert" hidden><div class="modal-card"><div class="panel-brand"><div class="gogh-wordmark panel-wordmark" aria-label="고흐 스트라이크"><span>고흐</span><span>스트라이크</span></div></div><h2>페인트가 살짝 엎질러졌습니다.</h2><p id="fatal-error-message"></p><button class="primary-button" onclick="location.reload()">다시 시도</button></div></div>
+  </div>
+  <script>
+    function showBootError(error){document.body.classList.add('ready');document.getElementById('fatal-error').hidden=false;document.getElementById('fatal-error-message').textContent=error?.message||String(error||'마을을 다시 여려면 새로고침하세요.');}
+    addEventListener('error',event=>{if(event.error||event.message)showBootError(event.error||event.message);});
+    addEventListener('unhandledrejection',event=>showBootError(event.reason));
+  </script>
+  <script type="module" src="./src/game.js" onerror="showBootError(new Error('게임을 불러올 수 없습니다. 다시 시도해 주세요.'))"></script>
+</body>
+</html>

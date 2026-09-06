@@ -1,0 +1,18 @@
+/** Gameplay timing uses seconds; spread and recoil offsets use radians. */
+const definitions = [
+  { id:'pistol',name:'Atelier',label:'권총',class:'권총',description:'호두나무 그립의 가벼운 보조무기. 빠르고 의도된 핸들링이 특징.',damage:29,headMultiplier:2.05,fireInterval:.215,automatic:false,pellets:1,spread:.013,adsSpread:.0035,recoil:.020,magSize:12,reserveAmmo:84,reloadTime:1.35,reloadEmptyTime:1.75,range:72,damageFalloff:.65,speedMultiplier:1.04,zoomFov:61,color:'#e5bd49',cost:0,fireModes:['semi'],spreadBloom:.0025,spreadRecovery:.023,maxSpreadBloom:.018,armorPenetration:.38,attachmentOptions:{optic:['iron','reflex'],barrel:['standard','suppressor']} },
+  { id:'smg',name:'Mistral',label:'기관단총',class:'기관단총',description:'컴팩트한 청강철 기어. 자동, 3점 버스트, 단발 사이 전환 가능.',damage:20,headMultiplier:1.8,fireInterval:.073,automatic:true,pellets:1,spread:.025,adsSpread:.009,recoil:.013,magSize:30,reserveAmmo:180,reloadTime:1.8,reloadEmptyTime:2.25,range:49,damageFalloff:.5,speedMultiplier:1.02,zoomFov:59,color:'#79a68b',cost:1350,fireModes:['auto','burst','semi'],spreadBloom:.0019,spreadRecovery:.029,maxSpreadBloom:.033,armorPenetration:.42,attachmentOptions:{optic:['iron','reflex'],barrel:['standard','suppressor']} },
+  { id:'rifle',name:'Provençal',label:'돌격소총',class:'돌격소총',description:'만능 머시닝 리시버, 따뜻한 호두나무 가구, 제어된 점사 화력.',damage:31,headMultiplier:1.85,fireInterval:.118,automatic:true,pellets:1,spread:.017,adsSpread:.0045,recoil:.025,magSize:28,reserveAmmo:140,reloadTime:2.2,reloadEmptyTime:2.75,range:125,damageFalloff:.72,speedMultiplier:.98,zoomFov:55,color:'#d29b73',cost:2450,fireModes:['auto','burst','semi'],spreadBloom:.0026,spreadRecovery:.024,maxSpreadBloom:.032,armorPenetration:.65,attachmentOptions:{optic:['iron','reflex','scope'],barrel:['standard','suppressor']} },
+  { id:'shotgun',name:'Harvester',label:'산탄총',class:'산탄총',description:'리브 호두나무 펌프, 황동 베이스 샷건, 근거리 8발 패턴.',damage:14,headMultiplier:1.35,fireInterval:.88,automatic:false,pellets:8,spread:.068,adsSpread:.05,recoil:.062,magSize:6,reserveAmmo:48,reloadTime:2.65,reloadEmptyTime:3.1,range:33,damageFalloff:.23,speedMultiplier:.95,zoomFov:61,color:'#b68b31',cost:1850,fireModes:['semi'],spreadBloom:.008,spreadRecovery:.040,maxSpreadBloom:.02,armorPenetration:.28,attachmentOptions:{optic:['iron','reflex'],barrel:['standard']} },
+  { id:'sniper',name:'Nocturne',label:'정밀 소총',class:'정밀 소총',description:'홈이 파인 배럴, 정밀 광학, 수동 볼트가 인내심 있는 사격에 보답합니다.',damage:86,headMultiplier:1.65,fireInterval:1.15,automatic:false,pellets:1,spread:.033,adsSpread:.0008,recoil:.052,magSize:5,reserveAmmo:35,reloadTime:2.8,reloadEmptyTime:3.25,range:220,damageFalloff:.85,speedMultiplier:.9,zoomFov:31,color:'#648bb4',cost:3600,fireModes:['semi'],spreadBloom:.013,spreadRecovery:.03,maxSpreadBloom:.025,armorPenetration:.84,attachmentOptions:{optic:['scope','reflex'],barrel:['standard','suppressor']} },
+];
+const horizontal = [0,.08,-.13,.18,.24,.32,.27,.11,-.12,-.29,-.37,-.25,.02,.19,.34,.17];
+export const WEAPONS = Object.freeze(definitions.map(w => Object.freeze({
+  ...w, burstCount:3, burstInterval:w.fireInterval, burstDelay:.22,
+  defaultAttachments:Object.freeze({optic:w.id==='sniper'?'scope':'iron',barrel:'standard'}),
+  recoilPattern:Object.freeze(horizontal.map((x,i)=>Object.freeze({x:x*w.recoil,y:w.recoil*(.72+Math.min(i,7)*.065)}))),
+  fireModes:Object.freeze(w.fireModes),
+  attachmentOptions:Object.freeze({optic:Object.freeze(w.attachmentOptions.optic),barrel:Object.freeze(w.attachmentOptions.barrel)}),
+})));
+export const WEAPON_BY_ID=Object.freeze(Object.fromEntries(WEAPONS.map(w=>[w.id,w])));
+export const resolveWeapon=value=>typeof value==='string'?WEAPON_BY_ID[value]||WEAPONS[2]:typeof value==='number'?WEAPONS[value]||WEAPONS[2]:value||WEAPONS[2];
