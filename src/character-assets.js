@@ -29,9 +29,8 @@ loader.register(parser=>{
  return{name:'GoghSharedCharacterImages',afterRoot(){if(imageError)throw imageError;}};
 });
 // Pages subpath 호환: import.meta.url 기반으로 캐릭터 모델 URL 계산.
-// 빌드 후 dist/src/character-assets.js 위치에서 dist/assets/characters/ 로 이동.
-// 로컬(/, npm start)에서도 server.mjs가 src/ 아래 모든 파일을 같은 경로로 서빙하므로 동일.
-const modelBaseURL = new URL('../../assets/characters/', import.meta.url).href;
+// dist/src/character-assets.js → 한 단계 위로 → dist/assets/characters/
+const modelBaseURL = new URL('../assets/characters/', import.meta.url).href;
 let loading;
 export function loadCharacterAssets(){
  if(!loading)loading=Promise.all(Object.values(CHARACTER_DESIGNS).map(async design=>{
