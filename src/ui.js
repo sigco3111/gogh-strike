@@ -33,7 +33,8 @@ function weaponSVG(id){return `<svg viewBox="0 0 66 38" aria-hidden="true"><path
 function combatSVG(id){return PATHS[id]?weaponSVG(id):`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${(COMBAT_ICONS[id]||COMBAT_ICONS.unknown).path}"/></svg>`;}
 function weaponPreview(container,path,weapon){
  container.replaceChildren();container.classList.remove('has-image');const fallback=node('span','weapon-preview-fallback');fallback.innerHTML=weaponSVG(weapon.id);container.append(fallback);
- const image=document.createElement('img');image.src=`/${path.replace(/^\//,'')}`;image.alt=`${weapon.name} ${WEAPON_CLASS[weapon.id]||weapon.class}`;image.draggable=false;image.addEventListener('load',()=>container.classList.add('has-image'),{once:true});image.addEventListener('error',()=>image.remove(),{once:true});container.append(image);
+ // import.meta.url 기반 — Pages subpath(`/gogh-strike/`) 호환. 절대경로(`/assets/...`) 박으면 호스트 root에서 찾음.
+ const image=new Image();image.src=new URL(`../${path.replace(/^\.?\//,'')}`,import.meta.url).href;image.alt=`${weapon.name} ${WEAPON_CLASS[weapon.id]||weapon.class}`;image.draggable=false;image.addEventListener('load',()=>container.classList.add('has-image'),{once:true});image.addEventListener('error',()=>image.remove(),{once:true});container.append(image);
 }
 function portrait(team,role,name='Artist',card=false){
  const el=node('span','portrait');const initial=node('span','portrait-initial',String(name).replace(/^The /,'').slice(0,1));el.append(initial);
@@ -180,6 +181,7 @@ export class GameUI{
   const utility=p.utility||{},cooldowns=p.utilityCooldowns||state.utilityCooldowns||{};
   for(const ability of ABILITIES){const el=document.querySelector(`[data-ability="${ability.id}"]`),count=Math.max(0,Number(utility[ability.id])||0),cooldown=Math.max(0,Number(cooldowns[ability.id])||0);el.classList.toggle('empty',count===0);el.classList.toggle('cooling',cooldown>0);el.querySelector('.ability-charge').textContent=String(count);el.querySelector('.ability-state').textContent=cooldown>0?`${Math.ceil(cooldown)}s`:count===0?'USED':'';el.setAttribute('aria-label',`${ability.key}: ${ability.name}, ${count} charge${count===1?'':'s'}${cooldown?`, ready in ${Math.ceil(cooldown)} seconds`:''}`);}
   const healing=alive&&Number.isFinite(state.healing);$('interaction-hud').classList.toggle('show',healing);if(healing){text('interaction-label','Healing — hold H');$('interaction-fill').style.width=`${clamp(state.healing)*100}%`;}
+  const sprayReadyIn=Math.max(0,Number(state.spray?.readyIn)||0),canSpray=Boolean(state.spray?.canPlace);
   text('spray-status',sprayReadyIn>0?`${Math.ceil(sprayReadyIn)}초`:'스프레이');$('spray-hud').classList.toggle('cooling',sprayReadyIn>0);$('spray-hud').classList.toggle('can-place',canSpray);$('spray-hud').setAttribute('aria-label',sprayReadyIn>0?`아트 태그 ${Math.ceil(sprayReadyIn)}초 후 사용 가능`:canSpray?'T: 여기 벽에 아트 태그를 스프레이':'T: 가까운 벽을 조준해 아트 태그를 스프레이');
   const taunt=state.taunt||{},tauntActive=alive&&Boolean(taunt.active),tauntReadyIn=Math.max(0,Number(taunt.readyIn)||0),tauntName=taunt.name||getArtistTaunt(identity).name;
   this.setTaunting(tauntActive);
